@@ -16,6 +16,7 @@ class AddProfessionIdToUsers extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->unsignedBigInteger('profession_id')->nullable()->after('id');
             $table->foreign('profession_id')->references('id')->on('professions');
+            $table->boolean('is_admin')->default(false)->after('password');
         });
     }
 
@@ -29,6 +30,7 @@ class AddProfessionIdToUsers extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->dropForeign(['profession_id']);
             $table->dropColumn('profession_id');
+            $table->dropColumn('is_admin');
         });
     }
 }
