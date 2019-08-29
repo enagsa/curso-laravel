@@ -17,8 +17,8 @@
     }
   }
 
-main > .container {
-  padding: 60px 15px 0;
+main .container {
+  padding: 60px 0 0;
 }
 
 .footer {
