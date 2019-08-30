@@ -15,15 +15,19 @@ class UserController extends Controller
     	return view('user.index', compact('title', 'users'));
     }
 
-    public function show($id){
-        return view('user.show', compact('id'));
+    public function show(User $user){
+        return view('user.show', compact('user'));
     }
 
     public function create(){
-        return view('user.new');
+        return view('user.create');
     }
 
     public function edit($id){
     	return view('user.edit', compact('id'));
+    }
+
+    public function store(){
+        return 'Procesando información...';
     }
 }
