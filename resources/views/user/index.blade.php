@@ -22,7 +22,7 @@
 					<div class="table-cell">{{ $user->email }}</div>
 					<div class="table-cell">
 						<a class="boton view" href="{{ route('users.show', ['user' => $user]) }}"><i class="fa fa-eye"></i></a>
-						<a class="boton edit" href="#"><i class="fa fa-pencil"></i></a>
+						<a class="boton edit" href="{{ route('users.edit', ['user' => $user]) }}"><i class="fa fa-pencil"></i></a>
 						<a class="boton delete" href="#"><i class="fa fa-trash"></i></a>
 					</div>
 				</div>

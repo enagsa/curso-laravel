@@ -61,36 +61,19 @@ class UsersModuleTest extends TestCase
     }
 
     /** @test */
-    function it_loads_the_edit_user_detail_page(){
-        $user = factory(User::class)->create([
-            'name' => 'Enrique Aguilar'
-        ]);
-
-        $this->get(route('users.edit', compact('user')))
-             ->assertStatus(200)
-             ->assertSee('Editando detalles del usuario: '.$user->id);
-    }
-
-    /** @test */
-    function it_does_not_load_the_edit_user_detail_page_with_text_id(){
-        $this->get(route('users.edit', ['user' => 'texto']))
-             ->assertStatus(404);
-    }
-
-    /** @test */
     function it_creates_a_new_user(){
         $this->from(route('users.create'))
             ->post(route('users.store'), [
                 'name' => 'Enrique Aguilar',
                 'email' => 'enriqueaguilar@expacioweb.com',
-                'password' => '123456'
+                'password' => '123456789'
             ])
             ->assertRedirect(route('users'));
 
         $this->assertCredentials([
             'name' => 'Enrique Aguilar',
             'email' => 'enriqueaguilar@expacioweb.com',
-            'password' => '123456'
+            'password' => '123456789'
         ]);
     }
 
@@ -106,5 +89,96 @@ class UsersModuleTest extends TestCase
             ->assertSessionHasErrors(['name' => 'El campo nombre es obligatorio']);
 
         $this->assertEquals(0, User::count());
+    }
+
+    /** @test */
+    function the_email_is_required(){
+        $this->from(route('users.create'))
+            ->post(route('users.store'), [
+                'name' => 'Enrique',
+                'email' => '',
+                'password' => '123456'
+            ])
+            ->assertRedirect(route('users.create'))
+            ->assertSessionHasErrors(['email' => 'El campo email es obligatorio']);
+
+        $this->assertEquals(0, User::count());
+    }
+
+    /** @test */
+    function the_email_must_be_valid(){
+        $this->from(route('users.create'))
+            ->post(route('users.store'), [
+                'name' => 'Enrique',
+                'email' => 'correo no valido',
+                'password' => '123456'
+            ])
+            ->assertRedirect(route('users.create'))
+            ->assertSessionHasErrors(['email' => 'El email insertado no es válido']);
+
+        $this->assertEquals(0, User::count());
+    }
+
+    /** @test */
+    function the_email_must_be_unique(){
+        $user = factory(User::class)->create();
+
+        $this->from(route('users.create'))
+            ->post(route('users.store'), [
+                'name' => 'Enrique',
+                'email' => $user->email,
+                'password' => '123456'
+            ])
+            ->assertRedirect(route('users.create'))
+            ->assertSessionHasErrors(['email' => 'Email en uso']);
+
+        $this->assertEquals(1, User::count());
+    }
+
+    /** @test */
+    function the_password_is_required(){
+        $this->from(route('users.create'))
+            ->post(route('users.store'), [
+                'name' => 'Enrique',
+                'email' => 'enriqueaguilar@expacioweb.com',
+                'password' => ''
+            ])
+            ->assertRedirect(route('users.create'))
+            ->assertSessionHasErrors(['password' => 'El campo password es obligatorio']);
+
+        $this->assertEquals(0, User::count());
+    }
+
+    /** @test */
+    function the_password_must_be_greater_than_6_characters(){
+        $this->from(route('users.create'))
+            ->post(route('users.store'), [
+                'name' => 'Enrique',
+                'email' => 'enriqueaguilar@expacioweb.com',
+                'password' => '12345'
+            ])
+            ->assertRedirect(route('users.create'))
+            ->assertSessionHasErrors(['password' => 'El campo password es demasiado corto']);
+
+        $this->assertEquals(0, User::count());
+    }
+
+    /** @test */
+    function it_loads_the_edit_user_detail_page(){
+        $user = factory(User::class)->create([
+            'name' => 'Enrique Aguilar'
+        ]);
+
+        $this->get(route('users.edit', compact('user')))
+             ->assertStatus(200)
+             ->assertViewIs('user.edit')
+             ->assertSee('Editar Usuario #'.$user->id)
+             ->assertViewHas('user', $user);
+    }
+
+    /** @test */
+    function it_does_not_load_the_edit_user_detail_page_with_text_id(){
+        $this->get(route('users.edit', ['user' => 'texto']))
+             ->assertStatus(404);
     }
 }
