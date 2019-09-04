@@ -22,15 +22,23 @@ Route::get('/usuarios/{user}', 'UserController@show')
 	->where('user', '[0-9]+')
 	->name('users.show');
 
-Route::get('/usuarios/{user}/edit', 'UserController@edit')
-	->where('user', '[0-9]+')
-	->name('users.edit');
-
 Route::get('/usuarios/nuevo', 'UserController@create')
 	->name('users.create');
 
 Route::post('/usuarios/crear', 'UserController@store')
 	->name('users.store');
+
+Route::get('/usuarios/{user}/edit', 'UserController@edit')
+	->where('user', '[0-9]+')
+	->name('users.edit');
+
+Route::put('/usuarios/{user}', 'UserController@update')
+	->where('user', '[0-9]+')
+	->name('users.update');
+
+Route::delete('/usuarios/{user}', 'UserController@destroy')
+	->where('user', '[0-9]+')
+	->name('users.destroy');
 
 Route::get('/saludo/{name}', 'WelcomeUserController@without');
 

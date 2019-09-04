@@ -11,7 +11,8 @@
 		</div>
 	@endif
 
-	<form method="POST" action="">
+	<form method="POST" action="{{ route('users.update', compact('user')) }}">
+		{{ method_field('PUT') }}
 		{{ csrf_field() }}
 
 		<div class="table user-details">
