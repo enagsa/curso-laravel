@@ -62,11 +62,15 @@ class UsersModuleTest extends TestCase
 
     /** @test */
     function it_creates_a_new_user(){
+        $this->withoutExceptionHandling();
+
         $this->from(route('users.create'))
             ->post(route('users.store'), [
                 'name' => 'Enrique Aguilar',
                 'email' => 'enriqueaguilar@expacioweb.com',
-                'password' => '123456789'
+                'password' => '123456789',
+                'bio' => 'Descripción del usuario en cuestión',
+                'twitter' => 'https://twitter.com/notengouser'
             ])
             ->assertRedirect(route('users'));
 
@@ -74,6 +78,12 @@ class UsersModuleTest extends TestCase
             'name' => 'Enrique Aguilar',
             'email' => 'enriqueaguilar@expacioweb.com',
             'password' => '123456789'
+        ]);
+
+        $this->assertDatabaseHas('user_profiles', [
+            'bio' => 'Descripción del usuario en cuestión',
+            'twitter' => 'https://twitter.com/notengouser',
+            'user_id' => User::first()->id
         ]);
     }
 
@@ -83,7 +93,9 @@ class UsersModuleTest extends TestCase
             ->post(route('users.store'), [
                 'name' => '',
                 'email' => 'enriqueaguilar@expacioweb.com',
-                'password' => '123456'
+                'password' => '123456',
+                'bio' => 'Descripción del usuario en cuestión',
+                'twitter' => 'https://twitter.com/notengouser'
             ])
             ->assertRedirect(route('users.create'))
             ->assertSessionHasErrors(['name' => 'El campo nombre es obligatorio']);
@@ -97,7 +109,9 @@ class UsersModuleTest extends TestCase
             ->post(route('users.store'), [
                 'name' => 'Enrique',
                 'email' => '',
-                'password' => '123456'
+                'password' => '123456',
+                'bio' => 'Descripción del usuario en cuestión',
+                'twitter' => 'https://twitter.com/notengouser'
             ])
             ->assertRedirect(route('users.create'))
             ->assertSessionHasErrors(['email' => 'El campo email es obligatorio']);
@@ -111,7 +125,9 @@ class UsersModuleTest extends TestCase
             ->post(route('users.store'), [
                 'name' => 'Enrique',
                 'email' => 'correo no valido',
-                'password' => '123456'
+                'password' => '123456',
+                'bio' => 'Descripción del usuario en cuestión',
+                'twitter' => 'https://twitter.com/notengouser'
             ])
             ->assertRedirect(route('users.create'))
             ->assertSessionHasErrors(['email' => 'El email insertado no es válido']);
@@ -127,7 +143,9 @@ class UsersModuleTest extends TestCase
             ->post(route('users.store'), [
                 'name' => 'Enrique',
                 'email' => $user->email,
-                'password' => '123456'
+                'password' => '123456',
+                'bio' => 'Descripción del usuario en cuestión',
+                'twitter' => 'https://twitter.com/notengouser'
             ])
             ->assertRedirect(route('users.create'))
             ->assertSessionHasErrors(['email' => 'Email en uso']);
@@ -141,7 +159,9 @@ class UsersModuleTest extends TestCase
             ->post(route('users.store'), [
                 'name' => 'Enrique',
                 'email' => 'enriqueaguilar@expacioweb.com',
-                'password' => ''
+                'password' => '',
+                'bio' => 'Descripción del usuario en cuestión',
+                'twitter' => 'https://twitter.com/notengouser'
             ])
             ->assertRedirect(route('users.create'))
             ->assertSessionHasErrors(['password' => 'El campo password es obligatorio']);
@@ -155,10 +175,71 @@ class UsersModuleTest extends TestCase
             ->post(route('users.store'), [
                 'name' => 'Enrique',
                 'email' => 'enriqueaguilar@expacioweb.com',
-                'password' => '12345'
+                'password' => '12345',
+                'bio' => 'Descripción del usuario en cuestión',
+                'twitter' => 'https://twitter.com/notengouser'
             ])
             ->assertRedirect(route('users.create'))
             ->assertSessionHasErrors(['password' => 'El campo password es demasiado corto']);
+
+        $this->assertEquals(0, User::count());
+    }
+
+    /** @test */
+    function the_bio_is_required(){
+        $this->from(route('users.create'))
+            ->post(route('users.store'), [
+                'name' => 'Enrique',
+                'email' => 'enriqueaguilar@expacioweb.com',
+                'password' => '123456',
+                'bio' => '',
+                'twitter' => 'https://twitter.com/notengouser'
+            ])
+            ->assertRedirect(route('users.create'))
+            ->assertSessionHasErrors(['bio' => 'El campo biografia es obligatorio']);
+
+        $this->assertEquals(0, User::count());
+    }
+
+    /** @test */
+    function the_twitter_is_optional(){
+        $this->withoutExceptionHandling();
+
+        $this->from(route('users.create'))
+            ->post(route('users.store'), [
+                'name' => 'Enrique Aguilar',
+                'email' => 'enriqueaguilar@expacioweb.com',
+                'password' => '123456789',
+                'bio' => 'Descripción del usuario en cuestión',
+                'twitter' => ''
+            ])
+            ->assertRedirect(route('users'));
+
+        $this->assertCredentials([
+            'name' => 'Enrique Aguilar',
+            'email' => 'enriqueaguilar@expacioweb.com',
+            'password' => '123456789'
+        ]);
+
+        $this->assertDatabaseHas('user_profiles', [
+            'bio' => 'Descripción del usuario en cuestión',
+            'twitter' => null,
+            'user_id' => User::first()->id
+        ]);
+    }
+
+    /** @test */
+    function the_twitter_must_be_valid(){
+        $this->from(route('users.create'))
+            ->post(route('users.store'), [
+                'name' => 'Enrique',
+                'email' => 'enriqueaguilar@expacioweb.com',
+                'password' => '123456',
+                'bio' => 'Descripción del usuario en cuestión',
+                'twitter' => 'twitter no valido'
+            ])
+            ->assertRedirect(route('users.create'))
+            ->assertSessionHasErrors(['twitter' => 'La url de twitter insertada no es válida']);
 
         $this->assertEquals(0, User::count());
     }

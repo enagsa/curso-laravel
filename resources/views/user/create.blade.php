@@ -42,6 +42,24 @@
 					@endif
 				</div>
 			</div>
+			<div class="table-line align-top">
+				<div class="table-cell"><label for="create-bio"><strong>Biografía:</strong></label></div>
+				<div class="table-cell">
+					<textarea id="create-bio" name="bio" placeholder="Cuéntanos algo de tu vida">{{ old('bio') }}</textarea>			
+					@if($errors->has('bio'))
+						<span class="error">{{ $errors->first('bio') }}</span>
+					@endif
+				</div>
+			</div>
+			<div class="table-line">
+				<div class="table-cell"><label for="create-twitter"><strong>Twitter:</strong></label></div>
+				<div class="table-cell">
+					<input id="create-twitter" type="text" name="twitter" placeholder="https://twitter.com/usuario" value="{{ old('twitter') }}"/>					
+					@if($errors->has('twitter'))
+						<span class="error">{{ $errors->first('twitter') }}</span>
+					@endif
+				</div>
+			</div>
 		</div>
 
 		<button type="submit" class="volver">Crear usuario <i class="fa fa-plus"></i></button>

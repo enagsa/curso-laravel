@@ -15,6 +15,7 @@ body > main h1{ font-size: 40px; margin-bottom: 10px; font-weight: 500; }
 .table-line.title{ background: #333; color: #FFF; font-family: 'Roboto'; font-weight: 500; text-transform: uppercase; }
 .table-line:last-child{ border: none; }
 .table-cell{ display: table-cell; padding: 0 20px; width: 40%; vertical-align: middle; }
+.align-top .table-cell{ vertical-align: top; }
 .table-cell:last-child{ width: 20%; text-align: center; }
 .table-cell:last-child form{ display: inline-block; position: relative; transform: translate(0,-1px); }
 .table-cell:last-child a, .table-cell:last-child button{ display: inline-block; width: 25px; padding: 4px 0; text-align: center; color: #FFF; margin-left: 3px; border-radius: 2px; border:none; line-height: 1; outline: none; cursor: pointer; }
@@ -30,8 +31,9 @@ body > main h1{ font-size: 40px; margin-bottom: 10px; font-weight: 500; }
 
 #crear-usuario, #borrar-usuario button{ position: absolute; transform: translate(0,0); top:55px; right: 50px; outline: none; }
 #borrar-usuario button{ background: #E9594D; right: 180px; }
-.table-cell input{ display: block; width: 100%; background: none; border: none; font-family: 'Roboto'; font-weight: 300; font-size: 16px; outline: none; border-bottom:1px dashed #DDD; }
-.table-cell input::placeholder{ color: #AAA; }
+.table-cell input, .table-cell textarea{ display: block; width: 100%; background: none; border: none; font-family: 'Roboto'; font-weight: 300; font-size: 16px; outline: none; border-bottom:1px dashed #DDD; }
+.table-cell textarea{ height: 150px; resize: none; }
+.table-cell input::placeholder, .table-cell textarea::placeholder{ color: #AAA; }
 .table-cell .error{ display: block; padding-top: 5px; color: #B00; font-size: 10px; text-transform: uppercase; font-weight: 500; }
 
 /* Botón Volver */
