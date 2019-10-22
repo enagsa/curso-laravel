@@ -11,6 +11,16 @@ class UsersModuleTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function getValidData($custom = []){
+        return array_filter(array_merge([
+            'name' => 'Enrique Aguilar',
+            'email' => 'enriqueaguilar@expacioweb.com',
+            'password' => '123456789',
+            'bio' => 'Descripción del usuario en cuestión',
+            'twitter' => 'https://twitter.com/notengouser'
+        ], $custom));
+    }
+
     /** @test */
     function it_shows_the_users_list(){
         factory(User::class)->create([
@@ -65,13 +75,7 @@ class UsersModuleTest extends TestCase
         $this->withoutExceptionHandling();
 
         $this->from(route('users.create'))
-            ->post(route('users.store'), [
-                'name' => 'Enrique Aguilar',
-                'email' => 'enriqueaguilar@expacioweb.com',
-                'password' => '123456789',
-                'bio' => 'Descripción del usuario en cuestión',
-                'twitter' => 'https://twitter.com/notengouser'
-            ])
+            ->post(route('users.store'), $this->getValidData())
             ->assertRedirect(route('users'));
 
         $this->assertCredentials([
@@ -88,15 +92,34 @@ class UsersModuleTest extends TestCase
     }
 
     /** @test */
+    function the_twitter_field_is_optional(){
+        $this->withoutExceptionHandling();
+
+        $this->from(route('users.create'))
+            ->post(route('users.store'), $this->getValidData([
+                'twitter' => null
+            ]))
+            ->assertRedirect(route('users'));
+
+        $this->assertCredentials([
+            'name' => 'Enrique Aguilar',
+            'email' => 'enriqueaguilar@expacioweb.com',
+            'password' => '123456789'
+        ]);
+
+        $this->assertDatabaseHas('user_profiles', [
+            'bio' => 'Descripción del usuario en cuestión',
+            'twitter' => null,
+            'user_id' => User::first()->id
+        ]);
+    }
+
+    /** @test */
     function the_name_is_required(){
         $this->from(route('users.create'))
-            ->post(route('users.store'), [
-                'name' => '',
-                'email' => 'enriqueaguilar@expacioweb.com',
-                'password' => '123456',
-                'bio' => 'Descripción del usuario en cuestión',
-                'twitter' => 'https://twitter.com/notengouser'
-            ])
+            ->post(route('users.store'), $this->getValidData([
+                'name' => ''
+            ]))
             ->assertRedirect(route('users.create'))
             ->assertSessionHasErrors(['name' => 'El campo nombre es obligatorio']);
 
@@ -106,13 +129,9 @@ class UsersModuleTest extends TestCase
     /** @test */
     function the_email_is_required(){
         $this->from(route('users.create'))
-            ->post(route('users.store'), [
-                'name' => 'Enrique',
-                'email' => '',
-                'password' => '123456',
-                'bio' => 'Descripción del usuario en cuestión',
-                'twitter' => 'https://twitter.com/notengouser'
-            ])
+            ->post(route('users.store'), $this->getValidData([
+                'email' => ''
+            ]))
             ->assertRedirect(route('users.create'))
             ->assertSessionHasErrors(['email' => 'El campo email es obligatorio']);
 
@@ -122,13 +141,9 @@ class UsersModuleTest extends TestCase
     /** @test */
     function the_email_must_be_valid(){
         $this->from(route('users.create'))
-            ->post(route('users.store'), [
-                'name' => 'Enrique',
-                'email' => 'correo no valido',
-                'password' => '123456',
-                'bio' => 'Descripción del usuario en cuestión',
-                'twitter' => 'https://twitter.com/notengouser'
-            ])
+            ->post(route('users.store'), $this->getValidData([
+                'email' => 'email no valido'
+            ]))
             ->assertRedirect(route('users.create'))
             ->assertSessionHasErrors(['email' => 'El email insertado no es válido']);
 
@@ -140,13 +155,9 @@ class UsersModuleTest extends TestCase
         $user = factory(User::class)->create();
 
         $this->from(route('users.create'))
-            ->post(route('users.store'), [
-                'name' => 'Enrique',
-                'email' => $user->email,
-                'password' => '123456',
-                'bio' => 'Descripción del usuario en cuestión',
-                'twitter' => 'https://twitter.com/notengouser'
-            ])
+            ->post(route('users.store'), $this->getValidData([
+                'email' => $user->email
+            ]))
             ->assertRedirect(route('users.create'))
             ->assertSessionHasErrors(['email' => 'Email en uso']);
 
@@ -156,13 +167,9 @@ class UsersModuleTest extends TestCase
     /** @test */
     function the_password_is_required(){
         $this->from(route('users.create'))
-            ->post(route('users.store'), [
-                'name' => 'Enrique',
-                'email' => 'enriqueaguilar@expacioweb.com',
-                'password' => '',
-                'bio' => 'Descripción del usuario en cuestión',
-                'twitter' => 'https://twitter.com/notengouser'
-            ])
+            ->post(route('users.store'), $this->getValidData([
+                'password' => ''
+            ]))
             ->assertRedirect(route('users.create'))
             ->assertSessionHasErrors(['password' => 'El campo password es obligatorio']);
 
@@ -346,7 +353,7 @@ class UsersModuleTest extends TestCase
             ->assertRedirect(route('users.edit', $user))
             ->assertSessionHasErrors(['email' => 'Email en uso']);
 
-        
+
     }
 
     /** @test */
