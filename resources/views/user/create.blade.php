@@ -51,6 +51,20 @@
 					@endif
 				</div>
 			</div>
+			<div class="table-line align-top">
+				<div class="table-cell"><label for="create-profesion"><strong>Profesión:</strong></label></div>
+				<div class="table-cell">
+					<select name="profession_id" id="create-profesion">
+						<option value="">Selecciona una profesión</option>
+						@foreach($professions as $profession)
+							<option value="{{ $profession->id }}"{{ old('profession_id') == $profession->id ? ' selected' : '' }}>{{ $profession->title }}</option>
+						@endforeach
+					</select>		
+					@if($errors->has('profession_id'))
+						<span class="error">{{ $errors->first('profession_id') }}</span>
+					@endif
+				</div>
+			</div>
 			<div class="table-line">
 				<div class="table-cell"><label for="create-twitter"><strong>Twitter:</strong></label></div>
 				<div class="table-cell">

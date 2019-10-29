@@ -5,17 +5,22 @@ namespace Tests\Feature;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Models\User;
+use App\Models\{User,Profession};
 
 class UsersModuleTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected $profession;
+
     protected function getValidData($custom = []){
+        $this->profession = factory(Profession::class)->create();
+
         return array_filter(array_merge([
             'name' => 'Enrique Aguilar',
             'email' => 'enriqueaguilar@expacioweb.com',
             'password' => '123456789',
+            'profession_id' => $this->profession->id,
             'bio' => 'Descripción del usuario en cuestión',
             'twitter' => 'https://twitter.com/notengouser'
         ], $custom));
@@ -65,15 +70,18 @@ class UsersModuleTest extends TestCase
 
     /** @test */
     function it_loads_the_new_user_page(){
+        $profession = factory(Profession::class)->create();
+
         $this->get(route('users.create'))
              ->assertStatus(200)
-             ->assertSee('Crear Nuevo Usuario');
+             ->assertSee('Crear Nuevo Usuario')
+             ->assertViewHas('professions', function($professions) use($profession){
+                return $professions->contains($profession);
+             });
     }
 
     /** @test */
     function it_creates_a_new_user(){
-        $this->withoutExceptionHandling();
-
         $this->from(route('users.create'))
             ->post(route('users.store'), $this->getValidData())
             ->assertRedirect(route('users'));
@@ -81,7 +89,8 @@ class UsersModuleTest extends TestCase
         $this->assertCredentials([
             'name' => 'Enrique Aguilar',
             'email' => 'enriqueaguilar@expacioweb.com',
-            'password' => '123456789'
+            'password' => '123456789',
+            'profession_id' => $this->profession->id
         ]);
 
         $this->assertDatabaseHas('user_profiles', [
@@ -93,8 +102,6 @@ class UsersModuleTest extends TestCase
 
     /** @test */
     function the_twitter_field_is_optional(){
-        $this->withoutExceptionHandling();
-
         $this->from(route('users.create'))
             ->post(route('users.store'), $this->getValidData([
                 'twitter' => null
@@ -112,6 +119,56 @@ class UsersModuleTest extends TestCase
             'twitter' => null,
             'user_id' => User::first()->id
         ]);
+    }
+
+    /** @test */
+    function the_profession_id_field_is_optional(){
+        $this->from(route('users.create'))
+            ->post(route('users.store'), $this->getValidData([
+                'profession_id' => null
+            ]))
+            ->assertRedirect(route('users'));
+
+        $this->assertCredentials([
+            'name' => 'Enrique Aguilar',
+            'email' => 'enriqueaguilar@expacioweb.com',
+            'password' => '123456789',
+            'profession_id' => null
+        ]);
+
+        $this->assertDatabaseHas('user_profiles', [
+            'bio' => 'Descripción del usuario en cuestión',
+            'twitter' => 'https://twitter.com/notengouser',
+            'user_id' => User::first()->id
+        ]);
+    }
+
+    /** @test */
+    function the_profession_must_be_valid(){
+        $this->from(route('users.create'))
+            ->post(route('users.store'), $this->getValidData([
+                'profession_id' => '999'
+            ]))
+            ->assertRedirect(route('users.create'))
+            ->assertSessionHasErrors(['profession_id' => 'El campo profesión es obligatorio']);
+
+        $this->assertEquals(0, User::count());
+    }
+
+    /** @test */
+    function only_not_deleted_profession_are_valid(){
+        $nonSelectableProfession = factory(Profession::class)->create([
+            'deleted_at' => now()->format('Y-m-d')
+        ]);
+
+        $this->from(route('users.create'))
+            ->post(route('users.store'), $this->getValidData([
+                'profession_id' => $nonSelectableProfession->id
+            ]))
+            ->assertRedirect(route('users.create'))
+            ->assertSessionHasErrors(['profession_id' => 'El campo profesión es obligatorio']);
+
+        $this->assertEquals(0, User::count());
     }
 
     /** @test */
