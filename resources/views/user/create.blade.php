@@ -74,6 +74,25 @@
 					@endif
 				</div>
 			</div>
+
+			<div class="table-line">
+				<div class="table-cell"><label for="create-twitter"><strong>Habilidades:</strong></label></div>
+				<div class="table-cell">
+					@foreach($skills as $skill)
+						<label for="skill_{{ $skill->id }}" class="checkbox-label">
+							<input name="skills[{{ $skill->id }}]" 
+								type="checkbox" 
+								id="skill_{{ $skill->id }}" 
+								value="{{ $skill->id }}"
+								{{ old('skills.'.$skill->id) ? 'checked' : '' }}>
+							{{ $skill->name }}
+						</label>
+					@endforeach
+					@if($errors->has('skills'))
+						<span class="error">{{ $errors->first('skills') }}</span>
+					@endif
+				</div>
+			</div>
 		</div>
 
 		<button type="submit" class="volver">Crear usuario <i class="fa fa-plus"></i></button>

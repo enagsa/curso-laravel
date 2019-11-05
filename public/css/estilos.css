@@ -31,7 +31,7 @@ body > main h1{ font-size: 40px; margin-bottom: 10px; font-weight: 500; }
 
 #crear-usuario, #borrar-usuario button{ position: absolute; transform: translate(0,0); top:55px; right: 50px; outline: none; }
 #borrar-usuario button{ background: #E9594D; right: 180px; }
-.table-cell input, .table-cell textarea{ display: block; width: 100%; background: none; border: none; font-family: 'Roboto'; font-weight: 300; font-size: 16px; outline: none; border-bottom:1px dashed #DDD; }
+.table-cell input[type=text], .table-cell input[type=email], .table-cell input[type=password], .table-cell textarea, .table-cell select{ display: block; width: 100%; background: none; border: none; font-family: 'Roboto'; font-weight: 300; font-size: 16px; outline: none; border-bottom:1px dashed #DDD; }
 .table-cell textarea{ height: 150px; resize: none; }
 .table-cell input::placeholder, .table-cell textarea::placeholder{ color: #AAA; }
 .table-cell .error{ display: block; padding-top: 5px; color: #B00; font-size: 10px; text-transform: uppercase; font-weight: 500; }
@@ -58,3 +58,7 @@ button.volver{ background: #6C78AF; }
 .errores ul li:first-child{ padding-top: 0; }
 .errores *:first-child{ margin-top: 0; }
 .errores *:last-child{ margin-bottom: 0; }
+
+/* Checkbox */
+.table-cell .checkbox-label{ display: inline-block; padding-right: 15px; }
+.table-cell .checkbox-label input{ display: inline-block; margin-right: 2px; }

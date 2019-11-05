@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Models\{User,Profession};
+use App\Models\{User,Profession,Skill};
 
 class UsersModuleTest extends TestCase
 {
@@ -72,11 +72,17 @@ class UsersModuleTest extends TestCase
     function it_loads_the_new_user_page(){
         $profession = factory(Profession::class)->create();
 
+        $skillA = factory(Skill::class)->create();
+        $skillB = factory(Skill::class)->create();
+
         $this->get(route('users.create'))
              ->assertStatus(200)
              ->assertSee('Crear Nuevo Usuario')
              ->assertViewHas('professions', function($professions) use($profession){
                 return $professions->contains($profession);
+             })
+             ->assertViewHas('skills', function($skills) use($skillA,$skillB){
+                return $skills->contains($skillA) && $skills->contains($skillB);
              });
     }
 
@@ -89,14 +95,14 @@ class UsersModuleTest extends TestCase
         $this->assertCredentials([
             'name' => 'Enrique Aguilar',
             'email' => 'enriqueaguilar@expacioweb.com',
-            'password' => '123456789',
-            'profession_id' => $this->profession->id
+            'password' => '123456789'
         ]);
 
         $this->assertDatabaseHas('user_profiles', [
             'bio' => 'Descripción del usuario en cuestión',
             'twitter' => 'https://twitter.com/notengouser',
-            'user_id' => User::first()->id
+            'user_id' => User::first()->id,
+            'profession_id' => $this->profession->id
         ]);
     }
 
@@ -132,14 +138,14 @@ class UsersModuleTest extends TestCase
         $this->assertCredentials([
             'name' => 'Enrique Aguilar',
             'email' => 'enriqueaguilar@expacioweb.com',
-            'password' => '123456789',
-            'profession_id' => null
+            'password' => '123456789'
         ]);
 
         $this->assertDatabaseHas('user_profiles', [
             'bio' => 'Descripción del usuario en cuestión',
             'twitter' => 'https://twitter.com/notengouser',
-            'user_id' => User::first()->id
+            'user_id' => User::first()->id,
+            'profession_id' => null
         ]);
     }
 
@@ -267,8 +273,6 @@ class UsersModuleTest extends TestCase
 
     /** @test */
     function the_twitter_is_optional(){
-        $this->withoutExceptionHandling();
-
         $this->from(route('users.create'))
             ->post(route('users.store'), [
                 'name' => 'Enrique Aguilar',

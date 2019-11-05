@@ -24,7 +24,7 @@
 		@if($user->profession)
 			<div class="table-line">
 				<div class="table-cell"><strong>Profesión:</strong></div>
-				<div class="table-cell">{{ $user->profession->title }}</div>
+				<div class="table-cell">{{ $user->profile->profession->title }}</div>
 			</div>
 		@endif
 	</section>

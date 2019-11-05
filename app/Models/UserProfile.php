@@ -6,5 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserProfile extends Model
 {
-    protected $fillable = ['bio', 'twitter'];
+    protected $fillable = ['bio', 'twitter', 'profession_id'];
+
+    public function profession(){
+        return $this->belongsTo(Profession::class);
+    }
 }

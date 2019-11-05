@@ -16,7 +16,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'profession_id'
+        'name', 'email', 'password'
     ];
 
     /**
@@ -46,9 +46,9 @@ class User extends Authenticatable
         return $this->is_admin;
     }
 
-    public function profession(){
-        return $this->belongsTo(Profession::class);
-    }
+    /*public function profession(){
+        return $this->profile->profession;
+    }*/
 
     public function profile(){
         return $this->hasOne(UserProfile::class);
