@@ -34,8 +34,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $casts = [
-        'email_verified_at' => 'datetime',
-        'is_admin' => 'boolean'
+        'email_verified_at' => 'datetime'
     ];
 
     public static function findByEmail($email){
@@ -43,14 +42,14 @@ class User extends Authenticatable
     }
 
     public function isAdmin(){
-        return $this->is_admin;
+        return $this->role == 'admin';
     }
-
-    /*public function profession(){
-        return $this->profile->profession;
-    }*/
 
     public function profile(){
         return $this->hasOne(UserProfile::class);
+    }
+
+    public function skills(){
+        return $this->belongsToMany(Skill::class, 'user_skill');
     }
 }

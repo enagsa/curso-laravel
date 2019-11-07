@@ -22,7 +22,8 @@ class UsersModuleTest extends TestCase
             'password' => '123456789',
             'profession_id' => $this->profession->id,
             'bio' => 'Descripción del usuario en cuestión',
-            'twitter' => 'https://twitter.com/notengouser'
+            'twitter' => 'https://twitter.com/notengouser',
+            'role' => 'user'
         ], $custom));
     }
 
@@ -88,21 +89,47 @@ class UsersModuleTest extends TestCase
 
     /** @test */
     function it_creates_a_new_user(){
+        $this->withoutExceptionHandling();
+
+        $skillA = factory(Skill::class)->create();
+        $skillB = factory(Skill::class)->create();
+        $skillC = factory(Skill::class)->create();
+
         $this->from(route('users.create'))
-            ->post(route('users.store'), $this->getValidData())
+            ->post(route('users.store'), $this->getValidData([
+                'skills' => [$skillA->id, $skillB->id]
+            ]))
             ->assertRedirect(route('users'));
 
         $this->assertCredentials([
             'name' => 'Enrique Aguilar',
             'email' => 'enriqueaguilar@expacioweb.com',
-            'password' => '123456789'
+            'password' => '123456789',
+            'role' => 'user'
         ]);
+
+        $user = User::first();
 
         $this->assertDatabaseHas('user_profiles', [
             'bio' => 'Descripción del usuario en cuestión',
             'twitter' => 'https://twitter.com/notengouser',
-            'user_id' => User::first()->id,
+            'user_id' => $user->id,
             'profession_id' => $this->profession->id
+        ]);
+
+        $this->assertDatabaseHas('user_skill', [
+            'user_id' => $user->id,
+            'skill_id' => $skillA->id
+        ]);
+
+        $this->assertDatabaseHas('user_skill', [
+            'user_id' => $user->id,
+            'skill_id' => $skillB->id
+        ]);
+
+        $this->assertDatabaseMissing('user_skill', [
+            'user_id' => $user->id,
+            'skill_id' => $skillC->id
         ]);
     }
 
@@ -308,6 +335,61 @@ class UsersModuleTest extends TestCase
             ])
             ->assertRedirect(route('users.create'))
             ->assertSessionHasErrors(['twitter' => 'La url de twitter insertada no es válida']);
+
+        $this->assertEquals(0, User::count());
+    }
+
+    /** @test */
+    function the_skills_must_be_an_array(){
+        $this->from(route('users.create'))
+            ->post(route('users.store'), $this->getValidData([
+                'skills' => 'PHP, OOP, JS'
+            ]))
+            ->assertRedirect(route('users.create'))
+            ->assertSessionHasErrors(['skills' => 'El campo skills debe ser un array']);
+
+        $this->assertEquals(0, User::count());
+    }
+
+    /** @test */
+    function the_skills_must_be_valid(){
+        $skillA = factory(Skill::class)->create();
+        $skillB = factory(Skill::class)->create();
+
+        $this->from(route('users.create'))
+            ->post(route('users.store'), $this->getValidData([
+                'skills' => [$skillA->id, $skillB->id + 1]
+            ]))
+            ->assertRedirect(route('users.create'))
+            ->assertSessionHasErrors(['skills' => 'El campo skills contiene valores no válidos']);
+
+        $this->assertEquals(0, User::count());
+    }
+
+    /** @test */
+    function the_role_field_is_optional(){
+        $this->from(route('users.create'))
+            ->post(route('users.store'), $this->getValidData([
+                'role' => null
+            ]))
+            ->assertRedirect(route('users'));
+
+        $this->assertCredentials([
+            'name' => 'Enrique Aguilar',
+            'email' => 'enriqueaguilar@expacioweb.com',
+            'password' => '123456789',
+            'role' => 'user'
+        ]);
+    }
+
+    /** @test */
+    function the_role_field_must_be_valid(){
+        $this->from(route('users.create'))
+            ->post(route('users.store'), $this->getValidData([
+                'role' => 'invalid-role'
+            ]))
+            ->assertRedirect(route('users.create'))
+            ->assertSessionHasErrors(['role' => 'El campo rol debe ser válido']);
 
         $this->assertEquals(0, User::count());
     }

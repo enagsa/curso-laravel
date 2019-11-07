@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Role;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -35,6 +36,14 @@ class CreateUserRequest extends FormRequest
             'profession_id' => [
                 'nullable',
                 Rule::exists('professions','id')->whereNull('deleted_at')
+            ],
+            'skills' => [
+                'array',
+                Rule::exists('skills', 'id')
+            ],
+            'role' => [
+                'nullable',
+                Rule::in(Role::getList())
             ]
         ];
     }
@@ -49,7 +58,10 @@ class CreateUserRequest extends FormRequest
             'password.min' => 'El campo password es demasiado corto',
             'bio.required' => 'El campo biografia es obligatorio',
             'twitter.url' => 'La url de twitter insertada no es válida',
-            'profession_id.exists' => 'El campo profesión es obligatorio'
+            'profession_id.exists' => 'El campo profesión es obligatorio',
+            'skills.array' => 'El campo skills debe ser un array',
+            'skills.exists' => 'El campo skills contiene valores no válidos',
+            'role.in' => 'El campo rol debe ser válido'
         ];
     }
 
@@ -57,17 +69,21 @@ class CreateUserRequest extends FormRequest
         DB::transaction(function(){
             $data = $this->validated();
 
-            $user = User::create([
+            $user = new User([
                 'name' => $data['name'],
                 'email' => $data['email'],
-                'password' => bcrypt($data['password']),
+                'password' => bcrypt($data['password'])
             ]);
+            $user->role = $data['role'] ?? 'user';
+            $user->save();
 
             $user->profile()->create([
                 'bio' => $data['bio'],
                 'twitter' => $data['twitter'] ?? null,                
                 'profession_id' => $data['profession_id'] ?? null
             ]);
+
+            $user->skills()->attach($data['skills'] ?? []);
         });
     }
 }

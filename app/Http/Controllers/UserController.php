@@ -24,7 +24,8 @@ class UserController extends Controller
     public function create(){
         $professions = Profession::orderBy('title', 'ASC')->get();
         $skills = Skill::orderBy('name', 'ASC')->get();
-        return view('user.create', compact('professions','skills'));
+        $roles = trans('users.roles');
+        return view('user.create', compact('professions','skills','roles'));
     }
 
     public function edit(User $user){

@@ -93,6 +93,26 @@
 					@endif
 				</div>
 			</div>
+
+			<div class="table-line">
+				<div class="table-cell"><label for="create-twitter"><strong>Rol:</strong></label></div>
+				<div class="table-cell">
+					@foreach($roles as $role => $name)
+						<label for="role_{{ $role }}" class="checkbox-label">
+							<input name="role" 
+								type="radio" 
+								id="role_{{ $role }}" 
+								value="{{ $role }}"
+								{{ old('role') == $role ? 'checked' : '' }}
+								>
+							{{ $name }}
+						</label>
+					@endforeach
+					@if($errors->has('role'))
+						<span class="error">{{ $errors->first('role') }}</span>
+					@endif
+				</div>
+			</div>
 		</div>
 
 		<button type="submit" class="volver">Crear usuario <i class="fa fa-plus"></i></button>
