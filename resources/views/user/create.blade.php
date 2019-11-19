@@ -7,12 +7,14 @@
 
 	@include('shared._errors')
 
-	<form method="POST" action="{{ route('users.store') }}">
-		<div class="table user-details">
+	@component('shared._form')
+		@slot('action', route('users.store'))
+		@slot('customs', '')
+		@slot('fields')
 			@include('user._fields')
-		</div>
-
-		<button type="submit" class="volver">Crear usuario <i class="fa fa-plus"></i></button>
-		<a href="{{ route('users') }}" class="volver">Volver al Listado <i class="fa fa-undo"></i></a>
-	</form>
+		@endslot
+		@slot('button')
+			Crear usuario <i class="fa fa-plus"></i>
+		@endslot
+	@endcomponent
 @endsection

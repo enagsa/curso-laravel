@@ -2,7 +2,8 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\Facades\Schema;
+use App\Http\ViewComposers\UserFieldsComposer;
+use Illuminate\Support\Facades\{Schema,View};
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -25,5 +26,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Schema::defaultStringLength(191);
+
+        View::composer(['user.create', 'user.edit'], UserFieldsComposer::class);
     }
 }

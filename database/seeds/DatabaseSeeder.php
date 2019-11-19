@@ -18,9 +18,9 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->call([
+            SkillSeeder::class,
             ProfessionSeeder::class,
-            UserSeeder::class,
-            SkillSeeder::class
+            UserSeeder::class
         ]);
     }
 

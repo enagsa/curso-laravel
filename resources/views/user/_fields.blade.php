@@ -29,9 +29,9 @@
 <div class="table-line align-top">
 	<div class="table-cell"><label for="create-bio"><strong>Biografía:</strong></label></div>
 	<div class="table-cell">
-		<textarea id="create-bio" name="bio" placeholder="Cuéntanos algo de tu vida">{{ old('bio') }}</textarea>			
+		<textarea id="create-bio" name="bio" placeholder="Cuéntanos algo de tu vida">{{ old('bio', $user->profile->bio) }}</textarea>			
 		@if($errors->has('bio'))
-			<span class="error">{{ $errors->first('bio', $user->profile->bio) }}</span>
+			<span class="error">{{ $errors->first('bio') }}</span>
 		@endif
 	</div>
 </div>
