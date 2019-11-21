@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Admin;
 
-use App\Models\User;
+use App\Models\{User,UserProfile,Profession,Skill};
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -42,20 +42,57 @@ class UpdateUsersTest extends TestCase
 
     /** @test */
     function it_updates_a_new_user(){
-        $user= factory(User::class)->create();
+        $user = factory(User::class)->create();
+
+        $oldProfession = factory(Profession::class)->create();
+        $user->profile()->save(factory(UserProfile::class)->make([
+            'profession_id' => $oldProfession->id
+        ]));
+        $oldSkill1 = factory(Skill::class)->create();
+        $oldSkill2 = factory(Skill::class)->create();
+        $user->skills()->attach([$oldSkill1->id,$oldSkill2->id]);
+
+        $newProfession = factory(Profession::class)->create();
+        $newSkill1 = factory(Skill::class)->create();
+        $newSkill2 = factory(Skill::class)->create();
 
         $this->from(route('users.edit', $user))
             ->put(route('users.update', $user), [
                 'name' => 'Enrique Aguilar',
                 'email' => 'enriqueaguilar@expacioweb.com',
-                'password' => '123456789'
+                'password' => '123456789',
+                'bio' => 'Descripción del usuario en cuestión',
+                'twitter' => 'https://twitter.com/notengouser',
+                'role' => 'admin',
+                'profession_id' => $newProfession->id,
+                'skills' => [$newSkill1->id,$newSkill2->id]
             ])
             ->assertRedirect(route('users.show', $user));
 
         $this->assertCredentials([
             'name' => 'Enrique Aguilar',
             'email' => 'enriqueaguilar@expacioweb.com',
-            'password' => '123456789'
+            'password' => '123456789',
+            'role' => 'admin'
+        ]);
+
+        $this->assertDatabaseHas('user_profiles', [
+            'user_id' => $user->id,
+            'bio' => 'Descripción del usuario en cuestión',
+            'twitter' => 'https://twitter.com/notengouser',
+            'profession_id' => $newProfession->id
+        ]);
+
+        $this->assertDatabaseCount('user_skill', 2);
+
+        $this->assertDatabaseHas('user_skill',[
+            'user_id' => $user->id,
+            'skill_id' => $newSkill1->id
+        ]);
+
+        $this->assertDatabaseHas('user_skill',[
+            'user_id' => $user->id,
+            'skill_id' => $newSkill2->id
         ]);
     }
 

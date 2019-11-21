@@ -2,9 +2,9 @@
 
 namespace App\Providers;
 
-use App\Http\ViewComposers\UserFieldsComposer;
-use Illuminate\Support\Facades\{Schema,View};
+use Illuminate\Support\Facades\{Schema,View,Blade};
 use Illuminate\Support\ServiceProvider;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -27,6 +27,13 @@ class AppServiceProvider extends ServiceProvider
     {
         Schema::defaultStringLength(191);
 
-        View::composer(['user.create', 'user.edit'], UserFieldsComposer::class);
+        Blade::directive('render', function($expression){
+            $parts = explode(',', $expression, 2);
+
+            $component = $parts[0];
+            $args = trim($parts[1] ?? '[]');
+
+            return "<?php echo app('App\Http\ViewComponents\\\\'.{$component}, {$args})->toHtml(); ?>";
+        });
     }
 }

@@ -13,7 +13,7 @@
 			{{ method_field('PUT') }}
 		@endslot
 		@slot('fields')
-			@include('user._fields')
+			@render('UserFields', compact('user'))
 		@endslot
 		@slot('button')
 			Actualizar usuario <i class="fa fa-pencil"></i>

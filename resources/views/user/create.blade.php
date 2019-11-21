@@ -11,7 +11,7 @@
 		@slot('action', route('users.store'))
 		@slot('customs', '')
 		@slot('fields')
-			@include('user._fields')
+			@render('UserFields', ['user' => $user])
 		@endslot
 		@slot('button')
 			Crear usuario <i class="fa fa-plus"></i>
