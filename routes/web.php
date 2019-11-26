@@ -40,6 +40,12 @@ Route::delete('/usuarios/{user}', 'UserController@destroy')
 	->where('user', '[0-9]+')
 	->name('users.destroy');
 
+Route::get('/editar-perfil', 'ProfileController@edit')
+	->name('edit.profile');
+
+Route::put('/editar-perfil', 'ProfileController@update')
+	->name('update.profile');
+
 Route::get('/saludo/{name}', 'WelcomeUserController@without');
 
 Route::get('/saludo/{name}/{nickname}', 'WelcomeUserController@with');

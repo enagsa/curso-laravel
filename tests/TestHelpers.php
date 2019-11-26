@@ -14,6 +14,16 @@ trait TestHelpers
         return $this->defaultData;
     }
 
+    protected function assertDatabaseEmpty($table, $connection = null){
+        $total = $this->getConnection($connection)->table($table)->count();
+        $this->assertSame(0, $total, sprintf(
+            "Failed asserting the table [%s] was empty. %s %s found.",
+            $table,
+            $total,
+            Str::plural('row',$total)
+        ));
+    }
+
     protected function assertDatabaseCount($table, $expected, $connection = null){
     	$total = $this->getConnection($connection)->table($table)->count();
     	$this->assertSame($expected, $total, sprintf(

@@ -110,11 +110,9 @@ class UpdateUsersTest extends TestCase
         $this->handleValidationExceptions();
         $user= factory(User::class)->create();
 
-        $this->put(route('users.update', $user), [
-                'name' => '',
-                'email' => 'enriqueaguilar@expacioweb.com',
-                'password' => '123456'
-            ])
+        $this->put(route('users.update', $user), $this->withData([
+                'name' => ''
+            ]))
             ->assertSessionHasErrors(['name' => 'El campo nombre es obligatorio']);
 
         $this->assertDatabaseMissing('users', ['email' => 'enriqueaguilar@expacioweb.com']);
@@ -127,11 +125,9 @@ class UpdateUsersTest extends TestCase
             'name' => 'No es Enrique'
         ]);
 
-        $this->put(route('users.update', $user), [
-                'name' => 'Enrique Aguilar',
-                'email' => '',
-                'password' => '123456'
-            ])
+        $this->put(route('users.update', $user), $this->withData([
+                'email' => ''
+            ]))
             ->assertSessionHasErrors(['email' => 'El campo email es obligatorio']);
 
         $this->assertDatabaseMissing('users', ['name' => 'Enrique Aguilar']);
@@ -142,11 +138,9 @@ class UpdateUsersTest extends TestCase
         $this->handleValidationExceptions();
         $user= factory(User::class)->create();
 
-        $this->put(route('users.update', $user), [
-                'name' => 'Enrique Aguilar',
-                'email' => 'email-no-valido',
-                'password' => '123456'
-            ])
+        $this->put(route('users.update', $user), $this->withData([
+                'email' => 'email-no-valido'
+            ]))
             ->assertSessionHasErrors(['email' => 'El email insertado no es válido']);
 
         $this->assertDatabaseMissing('users', ['email' => 'email-no-valido']);
@@ -158,11 +152,9 @@ class UpdateUsersTest extends TestCase
         $randomUser = factory(User::class)->create();
         $user= factory(User::class)->create();
 
-        $this->put(route('users.update', $user), [
-                'name' => 'Enrique Aguilar',
-                'email' => $randomUser->email,
-                'password' => '123456'
-            ])
+        $this->put(route('users.update', $user), $this->withData([
+                'email' => $randomUser->email
+            ]))
             ->assertSessionHasErrors(['email' => 'Email en uso']);
 
         $this->assertDatabaseMissing('users', [
@@ -177,17 +169,15 @@ class UpdateUsersTest extends TestCase
             'email' => 'enriqueaguilar@expacioweb.com'
         ]);
 
-        $this->put(route('users.update', $user), [
-                'name' => 'Enrique Aguilar',
-                'email' => 'enriqueaguilar@expacioweb.com',
-                'password' => '123456'
-            ])
+        $this->put(route('users.update', $user), $this->withData([
+                'email' => 'enriqueaguilar@expacioweb.com'
+            ]))
             ->assertRedirect(route('users.show', $user));
 
         $this->assertCredentials([
             'name' => 'Enrique Aguilar',
             'email' => 'enriqueaguilar@expacioweb.com',
-            'password' => '123456'
+            'password' => '123456789',
         ]);
     }
 
@@ -199,11 +189,9 @@ class UpdateUsersTest extends TestCase
             'password' => bcrypt($pass)
         ]);
 
-        $this->put(route('users.update', $user), [
-                'name' => 'Enrique Aguilar',
-                'email' => 'enriqueaguilar@expacioweb.com',
+        $this->put(route('users.update', $user), $this->withData([
                 'password' => ''
-            ])
+            ]))
             ->assertRedirect(route('users.show', $user));
 
         $this->assertCredentials([
@@ -211,5 +199,33 @@ class UpdateUsersTest extends TestCase
             'email' => 'enriqueaguilar@expacioweb.com',
             'password' => $pass
         ]);
+    }
+
+    /** @test */
+    function it_detaches_all_the_skills_if_none_is_checked(){
+        $user = factory(User::class)->create();
+
+        $oldSkill1 = factory(Skill::class)->create();
+        $oldSkill2 = factory(Skill::class)->create();
+        $user->skills()->attach([$oldSkill1->id,$oldSkill2->id]);
+
+        $this->from(route('users.edit', $user))
+            ->put(route('users.update', $user), $this->withData())
+            ->assertRedirect(route('users.show', $user));
+
+        $this->assertDatabaseEmpty('user_skill');
+    }
+
+    /** @test */
+    function the_role_is_required(){
+        $this->handleValidationExceptions();
+        $user= factory(User::class)->create();
+
+        $this->put(route('users.update', $user), $this->withData([
+                'role' => ''
+            ]))
+            ->assertSessionHasErrors(['role' => 'El campo nombre es obligatorio']);
+
+        $this->assertDatabaseMissing('users', ['email' => 'enriqueaguilar@expacioweb.com']);
     }
 }
