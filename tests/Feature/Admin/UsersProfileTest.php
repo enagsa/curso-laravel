@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Admin;
 
-use App\Models\{User,UserProfile};
+use App\Models\{User,UserProfile,Profession};
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -14,7 +14,6 @@ class UsersProfileTest extends TestCase
     protected $defaultData = [
         'name' => 'Enrique Aguilar',
         'email' => 'enriqueaguilar@expacioweb.com',
-        'password' => '123456789',
         'bio' => 'Descripción del usuario en cuestión',
         'twitter' => 'https://twitter.com/notengouser'
     ];
@@ -33,7 +32,6 @@ class UsersProfileTest extends TestCase
         $response = $this->put(route('update.profile'), [
             'name' => 'Enrique',
             'email' => 'enriqueaguilar@expacioweb.com',
-            'password' => '123456',
             'bio' => 'Full-stack developer',
             'twitter' => 'https://twitter.com/esfalso',
             'profession_id' => $newProfession->id
@@ -41,10 +39,9 @@ class UsersProfileTest extends TestCase
 
         $response->assertRedirect();
 
-        $this->assertCredentials([
+        $this->assertDatabaseHas('users', [
             'name' => 'Enrique',
-            'email' => 'enriqueaguilar@expacioweb.com',
-            'password' => '123456'
+            'email' => 'enriqueaguilar@expacioweb.com'
         ]);
 
         $this->assertDatabaseHas('user_profiles', [
@@ -56,11 +53,11 @@ class UsersProfileTest extends TestCase
 
     /** @test */
     function the_user_cannot_change_its_role(){
-        user = factory(User::class)->create([
+        $user = factory(User::class)->create([
             'role' => 'user'
         ]);
 
-        $resposne = $this->put(route('update.profile'), $this->withData([
+        $response = $this->put(route('update.profile'), $this->withData([
             'role' => 'admin'
         ]));
 
@@ -69,6 +66,25 @@ class UsersProfileTest extends TestCase
         $this->assertDatabaseHas('users', [
             'id' => $user->id,
             'role' => 'user'
+        ]);
+    }
+
+    /** @test */
+    function the_user_cannot_change_its_password(){
+        factory(User::class)->create([
+            'password' => bcrypt('old123')
+        ]);
+
+        $response = $this->put(route('update.profile'), $this->withData([
+            'email' => 'enriqueaguilar@expacioweb.com',
+            'password' => 'new456'
+        ]));
+
+        $response->assertRedirect();
+
+        $this->assertCredentials([
+            'email' => 'enriqueaguilar@expacioweb.com',
+            'password' => 'old123'
         ]);
     }
 }

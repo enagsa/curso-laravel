@@ -3,6 +3,7 @@ body{ font-family: 'Roboto'; font-weight: 300; line-height: normal; font-size: 1
 body > header{ position: fixed; top: 0; left: 0; width: 100%; background: #333; box-sizing: border-box; padding: 10px 50px; color: #FFF; }
 body > header #logo{ font-size: 24px; display: inline-block; font-weight: 500; }
 body > header #menu-superior{ float: right; padding-top: 7px; }
+body > header #menu-superior li{ display: inline-block; padding-left: 15px; }
 body > header a{ color: #FFF; }
 body > footer{ position: fixed; bottom: 0; left: 0; width: 100%; background: #F2F2F2; box-sizing: border-box; padding: 10px 50px; text-align: center; }
 body > main{ padding: 70px 50px; }
@@ -62,3 +63,7 @@ button.volver{ background: #6C78AF; }
 /* Checkbox */
 .table-cell .checkbox-label{ display: inline-block; padding-right: 15px; }
 .table-cell .checkbox-label input{ display: inline-block; margin-right: 2px; }
+
+/* Professions */
+#profession-table .table-cell{ width: 70%; }
+#profession-table .table-cell:first-child{ width: 10%; }

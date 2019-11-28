@@ -32,15 +32,6 @@
 					@endif
 				</div>
 			</div>
-			<div class="table-line">
-				<div class="table-cell"><label for="create-password"><strong>Contraseña:</strong></label></div>
-				<div class="table-cell">
-					<input id="create-password" type="password" name="password" placeholder="Mayor de 6 caracteres"/>					
-					@if($errors->has('password'))
-						<span class="error">{{ $errors->first('password') }}</span>
-					@endif
-				</div>
-			</div>
 			<div class="table-line align-top">
 				<div class="table-cell"><label for="create-bio"><strong>Biografía:</strong></label></div>
 				<div class="table-cell">

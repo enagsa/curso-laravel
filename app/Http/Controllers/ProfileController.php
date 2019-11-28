@@ -18,17 +18,17 @@ class ProfileController extends Controller
 
     public function update(Request $request){
     	$user = User::first();  	// Normalmente auth()->user()
-
-    	$data = $request->all();	// ADD VALIDATION!
-
-    	if(empty($data['password']))
-    		unset($data['password']);
-    	else
-    		$data['password'] = bcrypt($data['password']);
     	
-    	$user->update($data);
+    	$user->update([
+            'name' => $request->name,
+            'email' => $request->email
+        ]);
 
-    	$user->profile->update($data);
+    	$user->profile->update([
+            'bio' => $request->bio,
+            'twitter' => $request->twitter,
+            'profession_id' => $request->profession_id
+        ]);
 
     	return back();
     }
