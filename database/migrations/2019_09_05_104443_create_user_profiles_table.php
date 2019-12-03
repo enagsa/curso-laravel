@@ -20,10 +20,14 @@ class CreateUserProfilesTable extends Migration
             $table->string('twitter', 1000)->nullable();
 
             $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')
+                ->references('id')
+                ->on('users');
 
             $table->unsignedBigInteger('profession_id')->nullable();
-            $table->foreign('profession_id')->references('id')->on('professions');
+            $table->foreign('profession_id')
+                ->references('id')
+                ->on('professions');
 
             $table->timestamps();
         });

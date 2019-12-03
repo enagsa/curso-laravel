@@ -65,5 +65,6 @@ button.volver{ background: #6C78AF; }
 .table-cell .checkbox-label input{ display: inline-block; margin-right: 2px; }
 
 /* Professions */
-#profession-table .table-cell{ width: 70%; }
-#profession-table .table-cell:first-child{ width: 10%; }
+#profession-table .table-cell{ width: 50%; }
+#profession-table .table-cell:first-child, #profession-table .table-cell:nth-child(3){ width: 15%; }
+#profession-table .table-cell:nth-child(3){ text-align: center; }

@@ -13,9 +13,9 @@ class ListSkillsTest extends TestCase
 
     /** @test */
     function it_shows_the_professions_lists(){
-        factory(Skill::class)->create(['title' => 'PHP']);
-        factory(Skill::class)->create(['title' => 'HTML']);
-        factory(Skill::class)->create(['title' => 'CSS']);
+        factory(Skill::class)->create(['name' => 'PHP']);
+        factory(Skill::class)->create(['name' => 'HTML']);
+        factory(Skill::class)->create(['name' => 'CSS']);
 
         $this->get(route('skill.index'))
             ->assertStatus(200)

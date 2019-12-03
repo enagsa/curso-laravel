@@ -20,7 +20,7 @@ class ListProfessionsTest extends TestCase
         $this->get(route('profession.index'))
             ->assertStatus(200)
             ->assertSeeInOrder([
-                'Administrator',
+                'Administrador',
                 'Diseñador',
                 'Programador'
             ]);
