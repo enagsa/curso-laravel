@@ -5,9 +5,12 @@ namespace App\Models;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 
 class User extends Authenticatable
 {
+    use SoftDeletes;
     use Notifiable;
 
     protected $guarded = [];
@@ -48,7 +51,22 @@ class User extends Authenticatable
 
     public function delete(){
         $this->profile->delete();
-        $this->skills()->sync([]);
         return parent::delete();
+    }
+
+    public function forceDelete(){
+        $this->forceDeleting = true;
+
+        $this->profile->forceDelete();
+        $this->skills()->sync([]);
+
+        return tap($this->delete(), function ($deleted) {
+            $this->forceDeleting = false;
+
+            if ($deleted) {
+                $this->fireModelEvent('forceDeleted', false);
+            } else {
+            }
+        });
     }
 }

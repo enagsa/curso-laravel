@@ -23,7 +23,7 @@ body > main h1{ font-size: 40px; margin-bottom: 10px; font-weight: 500; }
 .table-cell:last-child button{ font-size:16px; transform: translate(0,1px); }
 .table-cell:last-child a:first-child{ margin-left: 0; }
 .table-cell:last-child a.view{ background: #F89C0E; }
-.table-cell:last-child a.edit{ background: #6C78AF; }
+.table-cell:last-child a.edit, .table-cell:last-child button.edit{ background: #6C78AF; }
 .table-cell:last-child button.delete{ background: #E9594D; }
 .table-cell:last-child a:hover, .table-cell:last-child button:hover{ background: #333; }
 

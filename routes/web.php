@@ -36,9 +36,20 @@ Route::put('/usuarios/{user}', 'UserController@update')
 	->where('user', '[0-9]+')
 	->name('users.update');
 
-Route::delete('/usuarios/{user}', 'UserController@destroy')
-	->where('user', '[0-9]+')
+Route::delete('/usuarios/{id}/borrar', 'UserController@destroy')
+	->where('id', '[0-9]+')
 	->name('users.destroy');
+
+Route::patch('/usuarios/{id}/restaurar', 'UserController@restore')
+	->where('id', '[0-9]+')
+	->name('users.restore');
+
+Route::patch('/usuarios/{user}/papelera', 'UserController@trash')
+	->where('user', '[0-9]+')
+	->name('users.trash');
+
+Route::get('/usuarios/papelera', 'UserController@trashed')
+	->name('users.trashed');
 
 Route::get('/editar-perfil', 'ProfileController@edit')
 	->name('edit.profile');

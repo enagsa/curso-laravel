@@ -7,6 +7,6 @@ use Faker\Generator as Faker;
 
 $factory->define(Profession::class, function (Faker $faker) {
     return [
-        'title' => $faker->sentence(2, false)
+        'title' => $faker->unique()->sentence(2, false)
     ];
 });

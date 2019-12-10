@@ -30,6 +30,7 @@ class CreateUserProfilesTable extends Migration
                 ->on('professions');
 
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
