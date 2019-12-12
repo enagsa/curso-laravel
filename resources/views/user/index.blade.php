@@ -45,5 +45,6 @@
 				</div>
 			@endforeach
 		</section>
+		{{ $users->links() }}
 	@endif
 @endsection

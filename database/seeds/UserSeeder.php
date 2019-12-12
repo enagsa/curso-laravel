@@ -31,10 +31,10 @@ class UserSeeder extends Seeder
 
         $user->skills()->sync($skills->random(6)->pluck('id'));
 
-        factory(User::class, 29)->create()->each(function($user) use($skills){
-            $user->profile()->create(
-                factory(UserProfile::class)->raw()
-            );
+        factory(User::class, 999)->create()->each(function($user) use($skills){
+            factory(UserProfile::class)->create([
+                'user_id' => $user->id
+            ]);
             $user->skills()->sync($skills->random(3)->pluck('id'));
         });
     }
