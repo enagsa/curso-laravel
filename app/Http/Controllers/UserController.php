@@ -9,19 +9,21 @@ use App\Http\Requests\{CreateUserRequest,UpdateUserRequest};
 class UserController extends Controller
 {
     public function index(){
-        $users = User::orderBy('created_at','DESC')->paginate();     
-
+        $users = User::orderBy('created_at','DESC')->paginate(); 
         $title = 'Listado de usuarios';
+        $roles = trans('users.roles');
+        $skills = Skill::orderBy('name', 'ASC')->get();
 
-    	return view('user.index', compact('title', 'users'));
+    	return view('user.index', compact('title', 'users', 'roles', 'skills'));
     }
 
     public function trashed(){
-        $users = User::onlyTrashed()->get();     
-
+        $users = User::onlyTrashed()->paginate();    
         $title = 'Listado de usuarios en papelera';
+        $roles = trans('users.roles');
+        $skills = Skill::orderBy('name', 'ASC')->get();
 
-        return view('user.index', compact('title', 'users'));
+        return view('user.index', compact('title', 'users', 'roles', 'skills'));
     }
 
     public function show(User $user){
