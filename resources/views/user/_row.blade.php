@@ -2,8 +2,8 @@
 	<div class="table-cell">{{ $user->id }}</div>
 	<div class="table-cell">
 		<h3>{{ $user->name }}</h3>
-		<div>Nombre de la Empresa</div>
 		<div>{{ $user->profile->profession->title }}</div>
+		<div>{{ $user->team->name }}</div>
 	</div>
 	<div class="table-cell">
 		<h4>{{ $user->email }}</h4>

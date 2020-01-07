@@ -11,6 +11,7 @@
     <link href="{{ asset('/css/font-awesome.min.css') }}" rel="stylesheet">
     <link href="{{ asset('/css/reset.css') }}" rel="stylesheet">
     <link href="{{ asset('/css/estilos.css') }}" rel="stylesheet">
+    <script type="text/javascript" src="{{ asset('/js/jquery.min.js') }}"></script>
 </head>
 <body>
     <header>   

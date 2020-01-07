@@ -49,6 +49,12 @@ class User extends Authenticatable
         return $this->belongsToMany(Skill::class, 'user_skill');
     }
 
+    public function team(){
+        return $this->belongsTo(Team::class)->withDefault([
+            'name' => '(Sin empresa)'
+        ]);
+    }
+
     public function delete(){
         $this->profile->delete();
         return parent::delete();
