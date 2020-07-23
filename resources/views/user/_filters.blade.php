@@ -25,9 +25,9 @@
 	</div>
 	<div id="filters-right">
 		<label for="date-start">Desde:</label>
-		<input type="date" name="date-start" id="date-start" value="request('date-start')" placeholder="Desde">
+		<input type="date" name="date-start" id="date-start" value="{{ request('date-start') }}" placeholder="Desde">
 		<label for="date-end">Hasta:</label>
-		<input type="date" name="date-end" id="date-end" value="request('date-end')" placeholder="Hasta">
+		<input type="date" name="date-end" id="date-end" value="{{ request('date-end') }}" placeholder="Hasta">
 		<input type="submit" id="filter" value="Filtrar"/>
 	</div>
 	<div style="clear:both"></div>
