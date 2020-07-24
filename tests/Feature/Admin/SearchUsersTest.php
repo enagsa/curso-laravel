@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Admin;
 
-use App\Models\User;
+use App\Models\{User,Team};
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -96,5 +96,61 @@ class SearchUsersTest extends TestCase
             ->assertViewHas('users', function($users) use($user1, $user2, $user3){
                 return $users->contains($user1) && $users->contains($user2) && !$users->contains($user3);
             });
+    }
+
+    /** @test */
+    function search_users_by_team_name(){
+        $user1 = factory(User::class)->create([
+            'name' => 'User 1',
+            'team_id' => factory(Team::class)->create(['name' => 'Smuggler'])->id
+        ]);
+
+        $user2 = factory(User::class)->create([
+            'name' => 'User 2',
+            'team_id' => null
+        ]);
+
+        $user3 = factory(User::class)->create([
+            'name' => 'User 3',
+            'team_id' => factory(Team::class)->create(['name' => 'Firefly'])->id
+        ]);
+
+        $response = $this->get(route('users', [
+                'search' => 'Firefly'
+            ]))
+            ->assertStatus(200);
+
+        $response->assertViewCollection('users')
+            ->contains($user3)
+            ->notContains($user1)
+            ->notContains($user2);
+    }
+
+    /** @test */
+    function show_results_with_a_partial_search_by_team_name(){
+        $user1 = factory(User::class)->create([
+            'name' => 'User 1',
+            'team_id' => factory(Team::class)->create(['name' => 'Smuggler'])->id
+        ]);
+
+        $user2 = factory(User::class)->create([
+            'name' => 'User 2',
+            'team_id' => null
+        ]);
+
+        $user3 = factory(User::class)->create([
+            'name' => 'User 3',
+            'team_id' => factory(Team::class)->create(['name' => 'Firefly'])->id
+        ]);
+
+        $response = $this->get(route('users', [
+                'search' => 'iref'
+            ]))
+            ->assertStatus(200);
+
+        $response->assertViewCollection('users')
+            ->contains($user3)
+            ->notContains($user1)
+            ->notContains($user2);
     }
 }
