@@ -25,6 +25,6 @@
 			
 			@each('user._row', $users, 'user')
 		</section>
-		{{ $users->links() }}
+		{{ $users->appends(request(['search','team']))->links() }}
 	@endif
 @endsection

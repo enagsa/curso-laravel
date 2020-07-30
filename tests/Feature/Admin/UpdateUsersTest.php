@@ -12,7 +12,8 @@ class UpdateUsersTest extends TestCase
     use RefreshDatabase;
 
     protected $defaultData = [
-        'name' => 'Enrique Aguilar',
+        'first_name' => 'Enrique',
+        'last_name' => 'Aguilar',
         'email' => 'enriqueaguilar@expacioweb.com',
         'password' => '123456789',
         'bio' => 'Descripción del usuario en cuestión',
@@ -22,9 +23,7 @@ class UpdateUsersTest extends TestCase
 
     /** @test */
     function it_loads_the_edit_user_detail_page(){
-        $user = factory(User::class)->create([
-            'name' => 'Enrique Aguilar'
-        ]);
+        $user = factory(User::class)->create();
 
         $this->get(route('users.edit', $user))
              ->assertStatus(200)
@@ -58,7 +57,8 @@ class UpdateUsersTest extends TestCase
 
         $this->from(route('users.edit', $user))
             ->put(route('users.update', $user), [
-                'name' => 'Enrique Aguilar',
+                'first_name' => 'Enrique',
+                'last_name' => 'Aguilar',
                 'email' => 'enriqueaguilar@expacioweb.com',
                 'password' => '123456789',
                 'bio' => 'Descripción del usuario en cuestión',
@@ -70,7 +70,8 @@ class UpdateUsersTest extends TestCase
             ->assertRedirect(route('users.show', $user));
 
         $this->assertCredentials([
-            'name' => 'Enrique Aguilar',
+            'first_name' => 'Enrique',
+            'last_name' => 'Aguilar',
             'email' => 'enriqueaguilar@expacioweb.com',
             'password' => '123456789',
             'role' => 'admin'
@@ -106,14 +107,27 @@ class UpdateUsersTest extends TestCase
     }
 
     /** @test */
-    function the_name_is_required(){
+    function the_first_name_is_required(){
         $this->handleValidationExceptions();
         $user= factory(User::class)->create();
 
         $this->put(route('users.update', $user), $this->withData([
-                'name' => ''
+                'first_name' => ''
             ]))
-            ->assertSessionHasErrors(['name' => 'El campo nombre es obligatorio']);
+            ->assertSessionHasErrors(['first_name' => 'El campo nombre es obligatorio']);
+
+        $this->assertDatabaseMissing('users', ['email' => 'enriqueaguilar@expacioweb.com']);
+    }
+
+    /** @test */
+    function the_last_name_is_required(){
+        $this->handleValidationExceptions();
+        $user= factory(User::class)->create();
+
+        $this->put(route('users.update', $user), $this->withData([
+                'last_name' => ''
+            ]))
+            ->assertSessionHasErrors(['last_name' => 'El campo apellido es obligatorio']);
 
         $this->assertDatabaseMissing('users', ['email' => 'enriqueaguilar@expacioweb.com']);
     }
@@ -122,7 +136,7 @@ class UpdateUsersTest extends TestCase
     function the_email_is_required(){
         $this->handleValidationExceptions();
         $user= factory(User::class)->create([
-            'name' => 'No es Enrique'
+            'first_name' => 'No es Enrique'
         ]);
 
         $this->put(route('users.update', $user), $this->withData([
@@ -130,7 +144,7 @@ class UpdateUsersTest extends TestCase
             ]))
             ->assertSessionHasErrors(['email' => 'El campo email es obligatorio']);
 
-        $this->assertDatabaseMissing('users', ['name' => 'Enrique Aguilar']);
+        $this->assertDatabaseMissing('users', ['first_name' => 'Enrique']);
     }
 
     /** @test */
@@ -158,7 +172,8 @@ class UpdateUsersTest extends TestCase
             ->assertSessionHasErrors(['email' => 'Email en uso']);
 
         $this->assertDatabaseMissing('users', [
-            'name' => 'Enrique Aguilar',
+            'first_name' => 'Enrique',
+            'last_name' => 'Aguilar',
             'email' => $randomUser->email
         ]);
     }
@@ -175,7 +190,8 @@ class UpdateUsersTest extends TestCase
             ->assertRedirect(route('users.show', $user));
 
         $this->assertCredentials([
-            'name' => 'Enrique Aguilar',
+            'first_name' => 'Enrique',
+            'last_name' => 'Aguilar',
             'email' => 'enriqueaguilar@expacioweb.com',
             'password' => '123456789',
         ]);
@@ -195,7 +211,8 @@ class UpdateUsersTest extends TestCase
             ->assertRedirect(route('users.show', $user));
 
         $this->assertCredentials([
-            'name' => 'Enrique Aguilar',
+            'first_name' => 'Enrique',
+            'last_name' => 'Aguilar',
             'email' => 'enriqueaguilar@expacioweb.com',
             'password' => $pass
         ]);
@@ -224,7 +241,7 @@ class UpdateUsersTest extends TestCase
         $this->put(route('users.update', $user), $this->withData([
                 'role' => ''
             ]))
-            ->assertSessionHasErrors(['role' => 'El campo nombre es obligatorio']);
+            ->assertSessionHasErrors(['role' => 'El campo rol es obligatorio']);
 
         $this->assertDatabaseMissing('users', ['email' => 'enriqueaguilar@expacioweb.com']);
     }

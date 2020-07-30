@@ -2,9 +2,18 @@
 <div class="table-line">
 	<div class="table-cell"><label for="create-name"><strong>Nombre:</strong></label></div>
 	<div class="table-cell">
-		<input id="create-name" type="text" name="name" placeholder="Nombre Apellidos" value="{{ old('name', $user->name) }}"/>
+		<input id="create-name" type="text" name="first_name" placeholder="Nombre" value="{{ old('first_name', $user->first_name) }}"/>
 		@if($errors->has('name'))
-			<span class="error">{{ $errors->first('name') }}</span>
+			<span class="error">{{ $errors->first('first_name') }}</span>
+		@endif
+	</div>
+</div>
+<div class="table-line">
+	<div class="table-cell"><label for="create-lastname"><strong>Apellido:</strong></label></div>
+	<div class="table-cell">
+		<input id="create-lastname" type="text" name="last_name" placeholder="Apellido" value="{{ old('last_name', $user->last_name) }}"/>
+		@if($errors->has('name'))
+			<span class="error">{{ $errors->first('last_name') }}</span>
 		@endif
 	</div>
 </div>

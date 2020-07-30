@@ -15,7 +15,8 @@ class UpdateUserRequest extends FormRequest
 
     public function rules(){
         return [
-            'name' => 'required',
+            'first_name' => 'required',
+            'last_name' => 'required',
             'email' => [
                 'required',
                 'email',
@@ -41,7 +42,8 @@ class UpdateUserRequest extends FormRequest
 
     public function messages(){
         return [
-            'name.required' => 'El campo nombre es obligatorio',
+            'first_name.required' => 'El campo nombre es obligatorio',
+            'last_name.required' => 'El campo apellido es obligatorio',
             'email.required' => 'El campo email es obligatorio',
             'email.email' => 'El email insertado no es válido',
             'email.unique' => 'Email en uso',
@@ -52,14 +54,15 @@ class UpdateUserRequest extends FormRequest
             'profession_id.exists' => 'El campo profesión es obligatorio',
             'skills.array' => 'El campo skills debe ser un array',
             'skills.exists' => 'El campo skills contiene valores no válidos',
-            'role.required' => 'El campo nombre es obligatorio',
+            'role.required' => 'El campo rol es obligatorio',
             'role.in' => 'El campo rol debe ser válido'
         ];
     }
 
     public function updateUser(User $user){
         $user->fill([
-            'name' => $this->name,
+            'first_name' => $this->first_name,
+            'last_name' => $this->last_name,
             'email' => $this->email,
             'role' => $this->role
         ]);

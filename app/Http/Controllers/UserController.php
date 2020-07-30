@@ -9,7 +9,8 @@ use App\Http\Requests\{CreateUserRequest,UpdateUserRequest};
 class UserController extends Controller
 {
     public function index(){
-        $users = User::query()
+        /*$users = User::query()
+            ->with('team','profile','skills','profile.profession')
             ->when(request('team'), function($query,$team){
                 if($team === 'with-team'){
                     $query->has('team');
@@ -19,7 +20,18 @@ class UserController extends Controller
             })
             ->search(request('search'))
             ->orderBy('created_at','DESC')
-            ->paginate(); 
+            ->paginate(); */
+
+        if(request('search')){
+            $q = User::search(request('search'));
+        } else {
+            $q = User::query();
+        }
+
+        $users = $q->paginate();
+
+        $users->load('team','profile','skills','profile.profession');
+
         $title = 'Listado de usuarios';
         $roles = trans('users.roles');
         $skills = Skill::orderBy('name', 'ASC')->get();

@@ -14,11 +14,11 @@ class ListUsersTest extends TestCase
     /** @test */
     function it_shows_the_users_list(){
         factory(User::class)->create([
-            'name' => 'User 1'
+            'first_name' => 'User 1'
         ]);
 
         factory(User::class)->create([
-            'name' => 'User 2'
+            'first_name' => 'User 2'
         ]);
 
         $this->get(route('users'))
@@ -26,17 +26,19 @@ class ListUsersTest extends TestCase
              ->assertSee('Listado de usuarios')
              ->assertSee('User 1')
              ->assertSee('User 2');
+
+        $this->assertNotRepeatedQueries();
     }
 
     /** @test */
     function it_paginates_the_users(){
         factory(User::class)->create([
-            'name' => 'Tercer usuario',
+            'first_name' => 'Tercer usuario',
             'created_at' => now()->subDays(5)
         ]);
 
         factory(User::class)->create([
-            'name' => 'Primer usuario',
+            'first_name' => 'Primer usuario',
             'created_at' => now()->subWeek()
         ]);
 
@@ -45,17 +47,17 @@ class ListUsersTest extends TestCase
         ]);
 
         factory(User::class)->create([
-            'name' => 'Decimoséptimo usuario',
+            'first_name' => 'Decimoséptimo usuario',
             'created_at' => now()->subDays(2)
         ]);
 
         factory(User::class)->create([
-            'name' => 'Segundo usuario',
+            'first_name' => 'Segundo usuario',
             'created_at' => now()->subDays(6)
         ]);
 
         factory(User::class)->create([
-            'name' => 'Decimosexto usuario',
+            'first_name' => 'Decimosexto usuario',
             'created_at' => now()->subDays(3)
         ]);
 
@@ -90,12 +92,12 @@ class ListUsersTest extends TestCase
     /** @test */
     function it_shows_the_deleted_users(){
         factory(User::class)->create([
-            'name' => 'User 1',
+            'first_name' => 'User 1',
             'deleted_at' => now()
         ]);
 
         factory(User::class)->create([
-            'name' => 'User 2'
+            'first_name' => 'User 2'
         ]);
 
         $this->get(route('users.trashed'))

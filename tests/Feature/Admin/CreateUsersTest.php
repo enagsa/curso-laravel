@@ -12,7 +12,8 @@ class CreateUsersTest extends TestCase
     use RefreshDatabase;
 
     protected $defaultData = [
-        'name' => 'Enrique Aguilar',
+        'first_name' => 'Enrique',
+        'last_name' => 'Aguilar',
         'email' => 'enriqueaguilar@expacioweb.com',
         'password' => '123456789',
         'bio' => 'Descripción del usuario en cuestión',
@@ -48,7 +49,8 @@ class CreateUsersTest extends TestCase
             ->assertRedirect(route('users'));
 
         $this->assertCredentials([
-            'name' => 'Enrique Aguilar',
+            'first_name' => 'Enrique',
+            'last_name' => 'Aguilar',
             'email' => 'enriqueaguilar@expacioweb.com',
             'password' => '123456789',
             'role' => 'user'
@@ -90,12 +92,23 @@ class CreateUsersTest extends TestCase
     }
 
     /** @test */
-    function the_name_is_required(){
+    function the_first_name_is_required(){
         $this->handleValidationExceptions();
         $this->post(route('users.store'), $this->withData([
-                'name' => ''
+                'first_name' => ''
             ]))
-            ->assertSessionHasErrors(['name' => 'El campo nombre es obligatorio']);
+            ->assertSessionHasErrors(['first_name' => 'El campo nombre es obligatorio']);
+
+        $this->assertEquals(0, User::count());
+    }
+
+    /** @test */
+    function the_last_name_is_required(){
+        $this->handleValidationExceptions();
+        $this->post(route('users.store'), $this->withData([
+                'last_name' => ''
+            ]))
+            ->assertSessionHasErrors(['last_name' => 'El campo apellido es obligatorio']);
 
         $this->assertEquals(0, User::count());
     }
@@ -114,6 +127,7 @@ class CreateUsersTest extends TestCase
     /** @test */
     function the_email_must_be_valid(){
         $this->handleValidationExceptions();
+
         $this->post(route('users.store'), $this->withData([
                 'email' => 'email no valido'
             ]))
@@ -149,13 +163,9 @@ class CreateUsersTest extends TestCase
     /** @test */
     function the_password_must_be_greater_than_6_characters(){
         $this->handleValidationExceptions();
-        $this->post(route('users.store'), [
-                'name' => 'Enrique',
-                'email' => 'enriqueaguilar@expacioweb.com',
-                'password' => '12345',
-                'bio' => 'Descripción del usuario en cuestión',
-                'twitter' => 'https://twitter.com/notengouser'
-            ])
+        $this->post(route('users.store'), $this->withData([
+                'password' => '12345'
+            ]))
             ->assertSessionHasErrors(['password' => 'El campo password es demasiado corto']);
 
         $this->assertEquals(0, User::count());
@@ -164,13 +174,9 @@ class CreateUsersTest extends TestCase
     /** @test */
     function the_bio_is_required(){
         $this->handleValidationExceptions();
-        $this->post(route('users.store'), [
-                'name' => 'Enrique',
-                'email' => 'enriqueaguilar@expacioweb.com',
-                'password' => '123456',
-                'bio' => '',
-                'twitter' => 'https://twitter.com/notengouser'
-            ])
+        $this->post(route('users.store'), $this->withData([
+                'bio' => ''
+            ]))
             ->assertSessionHasErrors(['bio' => 'El campo biografia es obligatorio']);
 
         $this->assertEquals(0, User::count());
@@ -178,17 +184,14 @@ class CreateUsersTest extends TestCase
 
     /** @test */
     function the_twitter_is_optional(){
-        $this->post(route('users.store'), [
-                'name' => 'Enrique Aguilar',
-                'email' => 'enriqueaguilar@expacioweb.com',
-                'password' => '123456789',
-                'bio' => 'Descripción del usuario en cuestión',
+        $this->post(route('users.store'), $this->withData([
                 'twitter' => ''
-            ])
+            ]))
             ->assertRedirect(route('users'));
 
         $this->assertCredentials([
-            'name' => 'Enrique Aguilar',
+            'first_name' => 'Enrique',
+            'last_name' => 'Aguilar',
             'email' => 'enriqueaguilar@expacioweb.com',
             'password' => '123456789'
         ]);
@@ -203,13 +206,9 @@ class CreateUsersTest extends TestCase
     /** @test */
     function the_twitter_must_be_valid(){
         $this->handleValidationExceptions();
-        $this->post(route('users.store'), [
-                'name' => 'Enrique',
-                'email' => 'enriqueaguilar@expacioweb.com',
-                'password' => '123456',
-                'bio' => 'Descripción del usuario en cuestión',
+        $this->post(route('users.store'), $this->withData([
                 'twitter' => 'twitter no valido'
-            ])
+            ]))
             ->assertSessionHasErrors(['twitter' => 'La url de twitter insertada no es válida']);
 
         $this->assertEquals(0, User::count());
@@ -249,7 +248,8 @@ class CreateUsersTest extends TestCase
             ->assertRedirect(route('users'));
 
         $this->assertCredentials([
-            'name' => 'Enrique Aguilar',
+            'first_name' => 'Enrique',
+            'last_name' => 'Aguilar',
             'email' => 'enriqueaguilar@expacioweb.com',
             'password' => '123456789',
             'role' => 'user'
@@ -267,28 +267,6 @@ class CreateUsersTest extends TestCase
         $this->assertEquals(0, User::count());
     }
 
-
-
-    /** @test */
-    function the_twitter_field_is_optional(){
-        $this->post(route('users.store'), $this->withData([
-                'twitter' => null
-            ]))
-            ->assertRedirect(route('users'));
-
-        $this->assertCredentials([
-            'name' => 'Enrique Aguilar',
-            'email' => 'enriqueaguilar@expacioweb.com',
-            'password' => '123456789'
-        ]);
-
-        $this->assertDatabaseHas('user_profiles', [
-            'bio' => 'Descripción del usuario en cuestión',
-            'twitter' => null,
-            'user_id' => User::first()->id
-        ]);
-    }
-
     /** @test */
     function the_profession_id_field_is_optional(){
         $this->post(route('users.store'), $this->withData([
@@ -297,7 +275,8 @@ class CreateUsersTest extends TestCase
             ->assertRedirect(route('users'));
 
         $this->assertCredentials([
-            'name' => 'Enrique Aguilar',
+            'first_name' => 'Enrique',
+            'last_name' => 'Aguilar',
             'email' => 'enriqueaguilar@expacioweb.com',
             'password' => '123456789'
         ]);

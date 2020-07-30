@@ -12,13 +12,13 @@ class SearchUsersTest extends TestCase
     use RefreshDatabase;
 
     /** @test */
-    function search_users_by_name(){
+    function search_users_by_first_name(){
         $user1 = factory(User::class)->create([
-            'name' => 'User 1'
+            'first_name' => 'User 1'
         ]);
 
         $user2 = factory(User::class)->create([
-            'name' => 'User 2'
+            'first_name' => 'User 2'
         ]);
 
         $this->get(route('users', [
@@ -31,17 +31,17 @@ class SearchUsersTest extends TestCase
     }
 
     /** @test */
-    function show_results_with_a_partial_search_by_name(){
+    function partial_search_by_first_name(){
         $user1 = factory(User::class)->create([
-            'name' => 'User 1'
+            'first_name' => 'User 1'
         ]);
 
         $user2 =factory(User::class)->create([
-            'name' => 'User 2'
+            'first_name' => 'User 2'
         ]);
 
         $user3 = factory(User::class)->create([
-            'name' => 'Not in search'
+            'first_name' => 'Not in search'
         ]);
 
         $this->get(route('users', [
@@ -51,6 +51,92 @@ class SearchUsersTest extends TestCase
             ->assertSee('Listado de usuarios')
             ->assertViewHas('users', function($users) use($user1, $user2, $user3){
                 return $users->contains($user1) && $users->contains($user2) && !$users->contains($user3);
+            });
+    }
+
+    /** @test */
+    function search_users_by_last_name(){
+        $user1 = factory(User::class)->create([
+            'last_name' => 'User 1'
+        ]);
+
+        $user2 = factory(User::class)->create([
+            'last_name' => 'User 2'
+        ]);
+
+        $this->get(route('users', [
+                'search' => 'User 1'
+            ]))
+            ->assertStatus(200)
+            ->assertViewHas('users', function($users) use($user1, $user2){
+                return $users->contains($user1) && !$users->contains($user2);
+            });
+    }
+
+    /** @test */
+    function partial_search_by_last_name(){
+        $user1 = factory(User::class)->create([
+            'last_name' => 'User 1'
+        ]);
+
+        $user2 =factory(User::class)->create([
+            'last_name' => 'User 2'
+        ]);
+
+        $user3 = factory(User::class)->create([
+            'last_name' => 'Not in search'
+        ]);
+
+        $this->get(route('users', [
+                'search' => 'User'
+            ]))
+            ->assertStatus(200)
+            ->assertSee('Listado de usuarios')
+            ->assertViewHas('users', function($users) use($user1, $user2, $user3){
+                return $users->contains($user1) && $users->contains($user2) && !$users->contains($user3);
+            });
+    }
+
+    /** @test */
+    function search_users_by_full_name(){
+        $user1 = factory(User::class)->create([
+            'first_name' => 'User 1',
+            'last_name' => 'Last 1'
+        ]);
+
+        $user2 = factory(User::class)->create([
+            'first_name' => 'User 2',
+            'last_name' => 'Last 2'
+        ]);
+
+        $this->get(route('users', [
+                'search' => 'User 1 Last 1'
+            ]))
+            ->assertStatus(200)
+            ->assertViewHas('users', function($users) use($user1, $user2){
+                return $users->contains($user1) && !$users->contains($user2);
+            });
+    }
+
+    /** @test */
+    function partial_search_by_full_name(){
+        $user1 = factory(User::class)->create([
+            'first_name' => 'User 1',
+            'last_name' => 'Last 1'
+        ]);
+
+        $user2 =factory(User::class)->create([
+            'first_name' => 'User 2',
+            'last_name' => 'Last 2'
+        ]);
+
+        $this->get(route('users', [
+                'search' => 'User 1 L'
+            ]))
+            ->assertStatus(200)
+            ->assertSee('Listado de usuarios')
+            ->assertViewHas('users', function($users) use($user1, $user2){
+                return $users->contains($user1) && !$users->contains($user2);
             });
     }
 
@@ -75,7 +161,7 @@ class SearchUsersTest extends TestCase
     }
 
     /** @test */
-    function show_results_with_a_partial_search_by_email(){
+    function partial_search_by_email(){
         $user1 = factory(User::class)->create([
             'email' => 'user1@example.com'
         ]);
@@ -101,17 +187,17 @@ class SearchUsersTest extends TestCase
     /** @test */
     function search_users_by_team_name(){
         $user1 = factory(User::class)->create([
-            'name' => 'User 1',
+            'first_name' => 'User 1',
             'team_id' => factory(Team::class)->create(['name' => 'Smuggler'])->id
         ]);
 
         $user2 = factory(User::class)->create([
-            'name' => 'User 2',
+            'first_name' => 'User 2',
             'team_id' => null
         ]);
 
         $user3 = factory(User::class)->create([
-            'name' => 'User 3',
+            'first_name' => 'User 3',
             'team_id' => factory(Team::class)->create(['name' => 'Firefly'])->id
         ]);
 
@@ -127,19 +213,19 @@ class SearchUsersTest extends TestCase
     }
 
     /** @test */
-    function show_results_with_a_partial_search_by_team_name(){
+    function partial_search_by_team_name(){
         $user1 = factory(User::class)->create([
-            'name' => 'User 1',
+            'first_name' => 'User 1',
             'team_id' => factory(Team::class)->create(['name' => 'Smuggler'])->id
         ]);
 
         $user2 = factory(User::class)->create([
-            'name' => 'User 2',
+            'first_name' => 'User 2',
             'team_id' => null
         ]);
 
         $user3 = factory(User::class)->create([
-            'name' => 'User 3',
+            'first_name' => 'User 3',
             'team_id' => factory(Team::class)->create(['name' => 'Firefly'])->id
         ]);
 

@@ -19,7 +19,8 @@ class UserSeeder extends Seeder
         $teams = Team::all();
 
         $user = factory(User::class)->create([
-            'name' => 'Enrique Aguilar',
+            'first_name' => 'Enrique',
+            'last_name' => 'Aguilar',
             'email' => 'enriqueaguilar@expacioweb.com',
             'password' => bcrypt('laravel'),
             'role' => 'admin',

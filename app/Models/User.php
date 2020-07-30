@@ -7,11 +7,13 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
+use Laravel\Scout\Searchable;
 
 class User extends Authenticatable
 {
     use SoftDeletes;
     use Notifiable;
+    use Searchable;
 
     protected $guarded = [];
 
@@ -76,17 +78,29 @@ class User extends Authenticatable
         });
     }
 
-    public function scopeSearch($query, $search){
+    /*public function scopeSearch($query, $search){
         if(empty($search)){
             return;
         }
 
         $query->where(function($query) use ($search){
-            $query->where('name', 'like', "%{$search}%")
+            $query->where(DB::raw('CONCAT(first_name, " ", last_name)'), 'like', "%{$search}%")
                 ->orWhere('email', 'like', "%{$search}%")
                 ->orWhereHas('team', function($query) use ($search){
                     $query->where('name', 'like', "%{$search}%");
                 });
         });
+    }*/
+
+    public function toSearchableArray(){
+        return [
+            'name' => $this->name,
+            'email' => $this->email,
+            'team' => $this->team->name
+        ];
+    }
+
+    public function getNameAttribute(){
+        return $this->first_name.' '.$this->last_name;
     }
 }

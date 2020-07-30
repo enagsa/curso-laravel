@@ -12,7 +12,8 @@ class UsersProfileTest extends TestCase
     use RefreshDatabase;
 
     protected $defaultData = [
-        'name' => 'Enrique Aguilar',
+        'first_name' => 'Enrique',
+        'last_name' => 'Aguilar',
         'email' => 'enriqueaguilar@expacioweb.com',
         'bio' => 'Descripción del usuario en cuestión',
         'twitter' => 'https://twitter.com/notengouser'
@@ -29,18 +30,19 @@ class UsersProfileTest extends TestCase
 
         $response->assertStatus(200);
 
-        $response = $this->put(route('update.profile'), [
-            'name' => 'Enrique',
-            'email' => 'enriqueaguilar@expacioweb.com',
+        $response = $this->put(route('update.profile'), $this->withData([
             'bio' => 'Full-stack developer',
             'twitter' => 'https://twitter.com/esfalso',
             'profession_id' => $newProfession->id
-        ]);
+        ]));
 
         $response->assertRedirect();
 
+        //dd(User::first());
+
         $this->assertDatabaseHas('users', [
-            'name' => 'Enrique',
+            'first_name' => 'Enrique',
+            'last_name' => 'Aguilar',
             'email' => 'enriqueaguilar@expacioweb.com'
         ]);
 

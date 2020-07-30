@@ -28,7 +28,8 @@ class CreateUserRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required',
+            'first_name' => 'required',
+            'last_name' => 'required',
             'email' => 'required | email | unique:users,email',
             'password' => 'required | min:6',
             'bio' => 'required',
@@ -50,7 +51,8 @@ class CreateUserRequest extends FormRequest
 
     public function messages(){
         return [
-            'name.required' => 'El campo nombre es obligatorio',
+            'first_name.required' => 'El campo nombre es obligatorio',
+            'last_name.required' => 'El campo apellido es obligatorio',
             'email.required' => 'El campo email es obligatorio',
             'email.email' => 'El email insertado no es válido',
             'email.unique' => 'Email en uso',
@@ -68,7 +70,8 @@ class CreateUserRequest extends FormRequest
     public function createUser(){
         DB::transaction(function(){
             $user = User::create([
-                'name' => $this->name,
+                'first_name' => $this->first_name,
+                'last_name' => $this->last_name,
                 'email' => $this->email,
                 'password' => bcrypt($this->password),
                 'role' =>  $this->role ?? 'user'

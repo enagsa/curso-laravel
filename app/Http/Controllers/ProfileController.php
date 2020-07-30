@@ -20,7 +20,8 @@ class ProfileController extends Controller
     	$user = User::first();  	// Normalmente auth()->user()
     	
     	$user->update([
-            'name' => $request->name,
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
             'email' => $request->email
         ]);
 
